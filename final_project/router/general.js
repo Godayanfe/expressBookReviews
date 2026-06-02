@@ -81,4 +81,37 @@ public_users.get("/author/:author", async (req, res) => {
 });
 
 // Task 13 - Get books by Title using async-await with Promise
-public_users.get("/title/:titl
+public_users.get("/title/:title", async (req, res) => {
+  const title = req.params.title;
+  try {
+    const getBooksByTitle = new Promise((resolve, reject) => {
+      const bookKeys = Object.keys(books);
+      const matchingBooks = {};
+      bookKeys.forEach((key) => {
+        if (books[key].title === title) {
+          matchingBooks[key] = books[key];
+        }
+      });
+      if (Object.keys(matchingBooks).length > 0) {
+        resolve(matchingBooks);
+      } else {
+        reject("No books found with this title");
+      }
+    });
+    const result = await getBooksByTitle;
+    return res.status(200).json(result);
+  } catch (error) {
+    return res.status(404).json({ message: error });
+  }
+});
+
+// Task 5 - Get book reviews by ISBN
+public_users.get("/review/:isbn", (req, res) => {
+  const isbn = req.params.isbn;
+  if (books[isbn]) {
+    return res.status(200).json(books[isbn].reviews);
+  }
+  return res.status(404).json({ message: "Book not found" });
+});
+
+module.exports.general = public_users;
